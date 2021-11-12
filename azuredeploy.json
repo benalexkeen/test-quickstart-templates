@@ -151,7 +151,7 @@
                 "[resourceId('Microsoft.Web/sites', parameters('webAppName'))]"
               ],
               "properties": {
-                "repoUrl": "[parameters('repoUrl')]",
+                "repoUrl": "https://github.com/benalexkeen/test-quickstart-templates/tree/master/app",
                 "branch": "master",
                 "isManualIntegration": true
               }
