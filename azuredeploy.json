@@ -63,6 +63,20 @@
         "metadata": {
           "description": "Optional Git Repo URL"
         }
+      },
+      "keyVaultName": {
+        "type": "string",
+        "defaultValue": "[concat('keyVault-', uniqueString(resourceGroup().id))]",
+        "minLength": 2,
+        "metadata": {
+          "description": "Key Vault name."
+        }
+      },
+      "aadUserObjectId": {
+        "type": "string",
+        "metadata": {
+          "description": "AAD Object ID."
+        }
       }
     },
     "functions": [],
@@ -144,6 +158,95 @@
             }
           ]
         }
+      },
+      {
+        "type": "Microsoft.KeyVault/vaults",
+        "apiVersion": "2019-09-01",
+        "name": "[parameters('keyVaultName')]",
+        "location": "[parameters('location')]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Sql/servers', concat(parameters('serverName')))]"
+        ],
+        "properties": {
+          "enableRbacAuthorization": false,
+          "enableSoftDelete": false,
+          "enabledForDeployment": false,
+          "enabledForDiskEncryption": false,
+          "enabledForTemplateDeployment": false,
+          "tenantId": "[subscription().tenantId]",
+          "accessPolicies": [
+              {
+                "tenantId": "[subscription().tenantId]",
+                "objectId": "[parameters('aadUserObjectId')]",
+                "permissions": {
+                    "secrets": [
+                        "list",
+                        "get",
+                        "set"
+                    ]
+                }
+              },
+              {
+                "tenantId": "[reference(resourceId('Microsoft.Web/sites', parameters('webAppName')), '2018-02-01', 'Full').identity.tenantId]",
+                "objectId": "[reference(resourceId('Microsoft.Web/sites', parameters('webAppName')), '2018-02-01', 'Full').identity.principalId]",
+                "permissions": {
+                    "secrets": [
+                        "list",
+                        "get",
+                        "set"
+                    ]
+                }
+              }
+          ],
+          "sku": {
+              "name": "Standard",
+              "family": "A"
+          }
+        }
+      },
+      {
+        "type": "Microsoft.KeyVault/vaults/secrets",
+        "apiVersion": "2021-04-01-preview",
+        "name": "[format('{0}/{1}', parameters('keyVaultName'), 'SqlServerName')]",
+        "properties": {
+          "value": "[parameters('serverName')]"
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+        ]
+      },
+      {
+        "type": "Microsoft.KeyVault/vaults/secrets",
+        "apiVersion": "2021-04-01-preview",
+        "name": "[format('{0}/{1}', parameters('keyVaultName'), 'SqlServerDb')]",
+        "properties": {
+          "value": "[parameters('sqlDBName')]"
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+        ]
+      },
+      {
+        "type": "Microsoft.KeyVault/vaults/secrets",
+        "apiVersion": "2021-04-01-preview",
+        "name": "[format('{0}/{1}', parameters('keyVaultName'), 'SqlServerUsername')]",
+        "properties": {
+          "value": "[parameters('administratorLogin')]"
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+        ]
+      },
+      {
+        "type": "Microsoft.KeyVault/vaults/secrets",
+        "apiVersion": "2021-04-01-preview",
+        "name": "[format('{0}/{1}', parameters('keyVaultName'), 'SqlServerPassword')]",
+        "properties": {
+          "value": "[parameters('administratorLoginPassword')]"
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+        ]
       }
     ],
     "outputs": {}
