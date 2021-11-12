@@ -1,0 +1,1 @@
+[![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fgithub.com%2Fbenalexkeen%2Ftest-quickstart-templates%2Fblob%2Fmaster%2Fazuredeploy.json)
