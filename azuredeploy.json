@@ -175,28 +175,17 @@
           "enabledForTemplateDeployment": false,
           "tenantId": "[subscription().tenantId]",
           "accessPolicies": [
-              {
-                "tenantId": "[subscription().tenantId]",
-                "objectId": "[parameters('aadUserObjectId')]",
-                "permissions": {
-                    "secrets": [
-                        "list",
-                        "get",
-                        "set"
-                    ]
-                }
-              },
-              {
-                "tenantId": "[reference(resourceId('Microsoft.Web/sites', parameters('webAppName')), '2018-02-01', 'Full').identity.tenantId]",
-                "objectId": "[reference(resourceId('Microsoft.Web/sites', parameters('webAppName')), '2018-02-01', 'Full').identity.principalId]",
-                "permissions": {
-                    "secrets": [
-                        "list",
-                        "get",
-                        "set"
-                    ]
-                }
+            {
+              "tenantId": "[subscription().tenantId]",
+              "objectId": "[parameters('aadUserObjectId')]",
+              "permissions": {
+                  "secrets": [
+                      "list",
+                      "get",
+                      "set"
+                  ]
               }
+            }
           ],
           "sku": {
               "name": "Standard",
